@@ -36,7 +36,6 @@ int main(void)
     printf("%s", getCardType(ccNumber));
 }
 
-
 /*-------------functions definitions------------*/
 
 //Validate credit card number length
