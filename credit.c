@@ -5,25 +5,25 @@
 #include <cs50.h>
 
 /*-------------functions declarations------------*/
-//Returns length of number given as an argument
-int numberLength(long input);
-
 //Checks if given number is a valid credit card number
 bool validateInput(long number);
+
+//Returns card type if valid, else returns INVALID
+string getCardType(long number);
+
+//Returns length of number given as an argument
+int numberLength(long input);
 
 //Returns number at given index of the number 
 //(starting at index 0, from right to left)
 int getNumberAtIndex(int index, long number);
 
-/*Returns the correct value of credit card digit to add to checksum
-  according to Hans Peter Luhn's algorithm*/
-int digitToChecksum(int index, int digit);
-
 //Validates the checksum with Luhn's algorithm
 bool validateChecksum(long number);
 
-//Returns card type if valid, else returns INVALID
-string getCardType(long number);
+/*Returns the correct value of credit card digit to add to checksum
+  according to Hans Peter Luhn's algorithm*/
+int digitToChecksum(int index, int digit);
 
 /*-----------------main program-----------------*/
 int main(void) 
@@ -38,48 +38,6 @@ int main(void)
 
 
 /*-------------functions definitions------------*/
-
-//returns number at given index of given number(counting from right side)
-int getNumberAtIndex(int index, long number)
-{
-    int i = 0;
-    int numberAtIndex;
-    while (true)
-    {   
-        //get the digit at current index 
-        numberAtIndex = number % 10;
-        //and return it if it matches requested index
-        if (i == index)
-        {
-            return numberAtIndex;
-        }
-        //if the indexes doesnt match, keep going to the
-        //next index (from right to left)
-        number /= 10;
-        i++;
-    }
-
-}
-
-//Counts the length of given cc number
-int numberLength(long number) 
-{
-    int length = 0;
-    while (true)
-    {
-        //if only a single digit of a number remains,
-        //ncrement the length and return it
-        if (number / 10 == 0) 
-        {
-            length++;
-            return length;
-        }
-        //keep dividing by 10 untill only single digit remains,
-        //then increment length
-        number /= 10;
-        length++;
-    }
-}
 
 //Validate credit card number length
 bool validateInput(long number)
@@ -125,6 +83,28 @@ string getCardType(long number)
     return "INVALID\n";
 }
 
+bool validateChecksum(long number)
+{
+    int checkSum = 0;
+    //iterate through every digit of credit card number, use
+    //digitToChecksum function to analize each digit and add
+    //correct value to total checkSum
+    for (int i = 0; i < numberLength(number); i++)
+    {
+        int numberAtCurrentIndex = getNumberAtIndex(i, number);
+        checkSum += digitToChecksum(i, numberAtCurrentIndex);
+    }
+    //if checkSum's last digit is 0, the credit card number
+    //is valid
+    if (checkSum % 10 == 0)
+    {
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}
 
 int digitToChecksum(int index, int digit)
 {
@@ -152,25 +132,44 @@ int digitToChecksum(int index, int digit)
     return addToChecksum;
 }
 
-bool validateChecksum(long number)
+//returns number at given index of given number(counting from right side)
+int getNumberAtIndex(int index, long number)
 {
-    int checkSum = 0;
-    //iterate through every digit of credit card number, use
-    //digitToChecksum function to analize each digit and add
-    //correct value to total checkSum
-    for (int i = 0; i < numberLength(number); i++)
-    {
-        int numberAtCurrentIndex = getNumberAtIndex(i, number);
-        checkSum += digitToChecksum(i, numberAtCurrentIndex);
+    int i = 0;
+    int numberAtIndex;
+    while (true)
+    {   
+        //get the digit at current index 
+        numberAtIndex = number % 10;
+        //and return it if it matches requested index
+        if (i == index)
+        {
+            return numberAtIndex;
+        }
+        //if the indexes doesnt match, keep going to the
+        //next index (from right to left)
+        number /= 10;
+        i++;
     }
-    //if checkSum's last digit is 0, the credit card number
-    //is valid
-    if (checkSum % 10 == 0)
+
+}
+
+//Counts the length of given cc number
+int numberLength(long number) 
+{
+    int length = 0;
+    while (true)
     {
-        return true;
-    }
-    else
-    {
-        return false;
+        //if only a single digit of a number remains,
+        //ncrement the length and return it
+        if (number / 10 == 0) 
+        {
+            length++;
+            return length;
+        }
+        //keep dividing by 10 untill only single digit remains,
+        //then increment length
+        number /= 10;
+        length++;
     }
 }
